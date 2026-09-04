@@ -5,20 +5,19 @@
 <meta name="viewport" content="width=240,height=282,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Pick Pocket Radio — Rabbit r1</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:240px;height:282px;overflow:hidden;background:#000;font-family:Arial,Helvetica,sans-serif}body{touch-action:manipulation}main{position:relative;width:240px;height:282px;background:#000;color:#fff7e8;overflow:hidden}.logo{position:absolute;left:12px;top:7px;width:216px;height:216px;border-radius:50%;object-fit:cover}#play{position:absolute;left:157px;top:60px;width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer}#play:after{content:'▶';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#efff00;font-size:30px;font-weight:900;text-shadow:0 0 2px #000}#play.playing:after{content:'Ⅱ';font-size:24px}.status{position:absolute;top:8px;right:10px;background:#000;padding:3px 5px;color:#efff00;font-size:8px;font-weight:900;letter-spacing:.6px;border-radius:3px}.vol{position:absolute;left:18px;right:18px;bottom:28px;display:grid;grid-template-columns:24px 1fr 18px;gap:6px;align-items:center;color:#fff7e8;font-size:8px;font-weight:900}.vol i{display:block;height:6px;border:1px solid #fff7e8}.vol b{display:block;height:100%;width:80%;background:#efff00}.hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#fff7e8;font-size:7px;font-weight:800;letter-spacing:.35px;opacity:.6}
+*{box-sizing:border-box}html,body{margin:0;width:240px;height:282px;overflow:hidden;background:#000;font-family:Arial,Helvetica,sans-serif}body{touch-action:manipulation}main{width:240px;height:282px;background:#000;display:flex;flex-direction:column;align-items:center;padding:8px 12px;color:#f5ecd8}.logo{display:block;width:196px;height:196px;object-fit:contain;flex:none}.listen{margin-top:7px;width:184px;height:43px;border:0;border-radius:7px;background:#eaff00;color:#050505;box-shadow:5px 5px 0 #ff1b8d;font-size:15px;font-weight:900;letter-spacing:2px;cursor:pointer}.listen:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #ff1b8d}.listen.playing{background:#ff1b8d;box-shadow:5px 5px 0 #eaff00}.listen .icon{display:inline-block;margin-right:10px;font-size:15px}.site{margin-top:13px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:#f5ecd8}.berlin{margin-top:4px;font-size:6px;font-weight:700;letter-spacing:1.2px;color:#f5ecd8;opacity:.65}
 </style>
 </head>
 <body>
 <main>
 <img class="logo" src="logo.svg" alt="Pick Pocket Radio">
-<div class="status" id="status">● READY</div>
-<button id="play" aria-label="Play / pause Pick Pocket Radio"></button>
-<div class="vol"><span>VOL</span><i><b id="bar"></b></i><span id="v">80</span></div>
-<div class="hint">SIDE = PLAY / PAUSE · WHEEL = VOL</div>
+<button class="listen" id="listen" aria-label="Listen to Pick Pocket Radio"><span class="icon" id="icon">▶</span><span id="label">LISTEN</span></button>
+<div class="site">PICKPOCKETRADIO.ORG</div>
+<div class="berlin">BROADCASTING FROM BERLIN</div>
 <audio id="audio" preload="none" playsinline src="https://stream.radeo.fr/toutvabiensepasser.mp3"></audio>
 </main>
 <script>
-(()=>{const audio=document.getElementById('audio'),play=document.getElementById('play'),status=document.getElementById('status'),bar=document.getElementById('bar'),v=document.getElementById('v');let volume=.8;audio.volume=volume;function draw(){const n=Math.round(volume*100);bar.style.width=n+'%';v.textContent=n}function state(on){play.classList.toggle('playing',on);status.textContent=on?'● ON AIR':'● PAUSED'}async function toggle(){if(audio.paused){status.textContent='● CONNECTING';try{await audio.play();state(true)}catch(e){status.textContent='TAP PLAY'}}else{audio.pause();state(false)}}function vol(d){volume=Math.max(0,Math.min(1,volume+d));audio.volume=volume;draw()}play.addEventListener('click',toggle);window.addEventListener('sideClick',toggle);window.addEventListener('scrollUp',()=>vol(.05));window.addEventListener('scrollDown',()=>vol(-.05));audio.addEventListener('playing',()=>state(true));audio.addEventListener('waiting',()=>status.textContent='● BUFFER');audio.addEventListener('error',()=>status.textContent='STREAM ERROR');draw()})();
+(()=>{const audio=document.getElementById('audio'),btn=document.getElementById('listen'),icon=document.getElementById('icon'),label=document.getElementById('label');function state(on){btn.classList.toggle('playing',on);icon.textContent=on?'Ⅱ':'▶';label.textContent=on?'ON AIR':'LISTEN'}async function toggle(){if(audio.paused){label.textContent='CONNECTING';try{await audio.play();state(true)}catch(e){state(false)}}else{audio.pause();state(false)}}btn.addEventListener('click',toggle);window.addEventListener('sideClick',toggle);audio.addEventListener('playing',()=>state(true));audio.addEventListener('pause',()=>state(false));audio.addEventListener('error',()=>{state(false);label.textContent='RETRY'});})();
 </script>
 </body>
 </html>
