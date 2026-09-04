@@ -1,15 +1,20 @@
 # Pick Pocket Radio — Rabbit r1 Player
 
+![Pick Pocket Radio on Rabbit r1](assets/pick-pocket-radio-rabbit-r1-promo.svg)
+
 Minimal Rabbit r1 player for **Pick Pocket Radio Berlin**.
 
 - Stream: `https://stream.radeo.fr/toutvabiensepasser.mp3`
-- Tap the play icon inside the logo to play/pause
+- Tap **LISTEN** to play/pause
 - Rabbit side button: play/pause
-- Rabbit scroll wheel: volume
 - Viewport: 240 × 282 px
+- Live Creation: `https://xavierfaltot.github.io/pickpocketradio-rabbit-player/`
 
-## Publish with GitHub Pages
+## Install on Rabbit r1
 
-In the repository, open **Settings → Pages**, select **Deploy from a branch**, then choose `main` and `/ (root)`.
+Open **Creations → Create → Add via QR code** on the Rabbit r1, then scan the Pick Pocket Radio Creation QR code.
 
-Use the resulting HTTPS URL in Rabbit Creations.
+## About
+
+**PICK POCKET RADIO — BERLIN**  
+**MIND YOUR CULTURE.**
