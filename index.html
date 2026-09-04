@@ -14,7 +14,7 @@
 <button class="listen" id="listen" aria-label="Listen to Pick Pocket Radio"><span class="icon" id="icon">▶</span><span id="label">LISTEN</span></button>
 <div class="site">PICKPOCKETRADIO.ORG</div>
 <div class="berlin">BROADCASTING FROM BERLIN</div>
-<audio id="audio" preload="none" playsinline src="https://stream.radeo.fr/toutvabiensepasser.mp3"></audio>
+<audio id="audio" preload="none" playsinline src="https://radio.pickpocketradio.org/stream.mp3"></audio>
 </main>
 <script>
 (()=>{const audio=document.getElementById('audio'),btn=document.getElementById('listen'),icon=document.getElementById('icon'),label=document.getElementById('label'),logo=document.getElementById('logo');fetch('logo-data.txt',{cache:'no-store'}).then(r=>r.text()).then(t=>{logo.src='data:image/jpeg;base64,'+t.trim()});function state(on){btn.classList.toggle('playing',on);icon.textContent=on?'Ⅱ':'▶';label.textContent=on?'ON AIR':'LISTEN'}async function toggle(){if(audio.paused){label.textContent='CONNECTING';try{await audio.play();state(true)}catch(e){state(false)}}else{audio.pause();state(false)}}btn.addEventListener('click',toggle);window.addEventListener('sideClick',toggle);audio.addEventListener('playing',()=>state(true));audio.addEventListener('pause',()=>state(false));audio.addEventListener('error',()=>{state(false);label.textContent='RETRY'});})();
