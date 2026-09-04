@@ -4,11 +4,11 @@
 
 Minimal Rabbit r1 player for **Pick Pocket Radio Berlin**.
 
-- Stream: `https://stream.radeo.fr/toutvabiensepasser.mp3`
+- Stream: `https://radio.pickpocketradio.org/stream.mp3`
 - Tap **LISTEN** to play/pause
 - Rabbit side button: play/pause
 - Viewport: 240 × 282 px
-- Live Creation: `https://xavierfaltot.github.io/PICKPOCKET-RABBIT-PLAYER/`
+- Live Creation: `https://xavierfaltot.github.io/pickpocketradio-rabbit-player/`
 
 ## Install on Rabbit r1
 
