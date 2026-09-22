@@ -1,12 +1,12 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=240,height=282,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Pick Pocket LIVE — Rabbit r1</title><style>
+<title>Pick Pocket LIVE — Rabbit r2</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:240px;height:282px;overflow:hidden;background:#000;font-family:Arial,sans-serif;color:#f5ecd8}
 main{width:240px;height:282px;display:flex;flex-direction:column;align-items:center;padding:5px 8px}.logo{width:82px;height:82px;object-fit:contain}
 .status{font-size:11px;font-weight:900;letter-spacing:1.5px;margin:1px 0 5px}.meter{width:190px;height:7px;background:#222;overflow:hidden;margin-bottom:5px}.meter i{display:block;height:100%;width:0;background:#eaff00}
 button{width:190px;height:28px;border:0;border-radius:6px;font-size:10px;font-weight:900;letter-spacing:1px;margin:2px 0}.row{width:190px;display:flex;gap:5px}.row button{width:92px}.connect{background:#eaff00;color:#000;box-shadow:3px 3px 0 #ff1b8d}.take{background:#ff1b8d;color:#000;box-shadow:3px 3px 0 #eaff00}.end{background:#f5ecd8;color:#000}button:disabled{opacity:.25}.rec{font-size:7px;letter-spacing:1px;margin-top:5px;opacity:.7}.rec.on{color:#ff1b8d;opacity:1}
 </style></head><body><main><img class="logo" id="logo" alt="Pick Pocket Radio"><div class="status" id="state">OFF AIR</div><div class="meter"><i id="meter"></i></div>
-<button id="connect" class="connect">CONNECT MICRO</button><div class="row"><button id="talk" class="take" disabled>TALK</button><button id="take" class="take" disabled>LIVE</button></div><div class="row"><button id="next" class="connect">NEXT</button><button id="jingle" class="connect">JINGLE</button></div><button id="sono" class="end" disabled>END TALK → SONO</button><button id="end" class="end" disabled>DISCONNECT</button><div id="rec" class="rec">REC OFF</div><div style="font-size:6px;letter-spacing:1px;margin-top:2px">PICK POCKET CONTROL</div>
+<button id="connect" class="connect">CONNECT MICRO</button><div class="row"><button id="talk" class="take" disabled>TALK</button><button id="take" class="take" disabled>LIVE</button></div><div class="row"><button id="next" class="connect">NEXT</button><button id="jingle" class="connect">JINGLE</button></div><button id="sono" class="end" disabled>END TALK → SONO</button><button id="end" class="end" disabled>DISCONNECT</button><div id="rec" class="rec">REC OFF</div><div style="font-size:6px;letter-spacing:1px;margin-top:2px">PICK POCKET CONTROL · R2</div>
 <script>
 const API='https://debian.tail394dbb.ts.net/live/',$=x=>document.getElementById(x);let stream,ctx,src,proc,queue=Promise.resolve(),active=false;
 fetch('logo-data.txt',{cache:'no-store'}).then(r=>r.text()).then(t=>$('logo').src='data:image/jpeg;base64,'+t.trim());
