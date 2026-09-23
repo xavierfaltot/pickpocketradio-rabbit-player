@@ -38,10 +38,11 @@ async function voiceStop(){
   try{
    const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});
    mediaStream.getTracks().forEach(t=>t.stop());
-   let r=await fetch(API+'api/voice',{method:'POST',headers:{'Content-Type':blob.type},body:blob});
+   const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),12000);
+   let r=await fetch(API+'api/voice',{method:'POST',headers:{'Content-Type':blob.type},body:blob,signal:ctl.signal});clearTimeout(timer);
    if(!r.ok)throw Error(await r.text());
-   let x=await r.json(); $('state').textContent='VOICE ON AIR '+x.seconds+'s';
-  }catch(e){$('state').textContent='VOICE ERROR'}
+   let x=await r.json(); $('state').textContent='VOICE SENT '+x.seconds+'s';setTimeout(()=>$('state').textContent='SONO PLAY',2500);
+  }catch(e){$('state').textContent=e.name==='AbortError'?'VOICE SENT / TIMEOUT':'VOICE ERROR';setTimeout(()=>$('state').textContent='SONO PLAY',2500)}
   $('ptt').textContent='HOLD PTT TO TALK';
  };
  recorder.stop();
