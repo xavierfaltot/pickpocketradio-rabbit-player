@@ -13,7 +13,7 @@ main{width:240px;height:282px;padding:5px 7px}.top{display:flex;gap:6px;align-it
 <div id="rec" class="rec">REC OFF · POCKET MOBILE RADIO CONTROL</div>
 <script>
 const API='https://debian.tail394dbb.ts.net/live/',$=x=>document.getElementById(x);let stream,ctx,src,proc,queue=Promise.resolve(),active=false;
-fetch('control-logo-data.txt',{cache:'no-store'}).then(r=>r.text()).then(t=>$('logo').src='data:image/jpeg;base64,'+t.trim());
+fetch('control-logo-data.txt?v=20260923-3',{cache:'reload'}).then(r=>r.text()).then(t=>$('logo').src='data:image/jpeg;base64,'+t.trim());
 async function api(p,o={}){let r=await fetch(API+p,o);if(!r.ok)throw Error(await r.text());return r.json()}
 async function tracks(){try{let x=await api('api/tracks');$('current').textContent=x.current||'—';$('coming').textContent=x.next||'—'}catch(e){}}
 function ui(s){$('live').disabled=!s.connected;$('sono').disabled=!s.connected;$('disconnect').disabled=!s.connected;$('state').textContent=s.talk?'TALK ON AIR':s.on_air?'LIVE ON AIR':s.connected?'READY':'OFF AIR';$('rec').textContent=(s.recording?'● REC':'REC OFF')+' · POCKET MOBILE RADIO CONTROL';$('rec').classList.toggle('on',s.recording)}
