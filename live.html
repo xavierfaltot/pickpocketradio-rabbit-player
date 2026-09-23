@@ -13,40 +13,33 @@ main{width:240px;height:282px;padding:5px 7px}.top{display:flex;gap:6px;align-it
 <div id="rec" class="rec">REC OFF · POCKET MOBILE RADIO CONTROL</div>
 <script>
 const API='https://debian.tail394dbb.ts.net/live/',$=x=>document.getElementById(x);let stream,ctx,src,proc,queue=Promise.resolve(),active=false;
-fetch('control-logo-data.txt?v=20260923-3',{cache:'reload'}).then(r=>r.text()).then(t=>$('logo').src='data:image/jpeg;base64,'+t.trim());
+fetch('control-logo-data.txt?v=8',{cache:'reload'}).then(r=>r.text()).then(t=>$('logo').src='data:image/jpeg;base64,'+t.trim());
 async function api(p,o={}){let r=await fetch(API+p,o);if(!r.ok)throw Error(await r.text());return r.json()}
 async function tracks(){try{let x=await api('api/tracks');$('current').textContent=x.current||'—';$('coming').textContent=x.next||'—'}catch(e){}}
 function ui(s){$('state').textContent='SONO PLAY';$('rec').textContent='POCKET MOBILE RADIO CONTROL'}
 function pcm(ev){if(!active)return;let input=ev.inputBuffer.getChannelData(0),out=new Int16Array(input.length*2),peak=0;for(let i=0;i<input.length;i++){let v=Math.max(-1,Math.min(1,input[i]));peak=Math.max(peak,Math.abs(v));v=Math.max(-1,Math.min(1,v*8));let q=v<0?v*32768:v*32767;out[i*2]=q;out[i*2+1]=q}$('meter').firstChild.style.width=(peak*100)+'%';let blob=new Blob([out.buffer],{type:'application/octet-stream'});queue=queue.then(()=>fetch(API+'api/pcm',{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:blob})).catch(()=>{$('state').textContent='MIC SEND ERROR'})}
 $('next').onclick=async()=>{try{await api('api/next',{method:'POST'});setTimeout(tracks,700)}catch(e){$('state').textContent='NEXT ERROR'}};$('jingle').onclick=async()=>{try{await api('api/jingle',{method:'POST'})}catch(e){$('state').textContent='JINGLE SOON'}};
 
-let mediaStream=null,recorder=null,chunks=[];
+let mediaStream=null,recorder=null,sendChain=Promise.resolve(),talking=false;
 async function voiceStart(){
- if(recorder&&recorder.state==='recording')return;
+ if(talking)return; talking=true;
  try{
-  $('state').textContent='LISTENING…';
+  $('state').textContent='CONNECTING LIVE…';
   mediaStream=await navigator.mediaDevices.getUserMedia({audio:true});
-  chunks=[]; recorder=new MediaRecorder(mediaStream);
-  recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-  recorder.start(); $('ptt').textContent='● TALKING — RELEASE';
- }catch(e){$('state').textContent='MIC ERROR'}
+  await api('api/stream-start',{method:'POST'});
+  recorder=new MediaRecorder(mediaStream,{mimeType:'audio/webm;codecs=opus'});
+  recorder.ondataavailable=e=>{if(!e.data||!e.data.size)return; const blob=e.data; sendChain=sendChain.then(async()=>{let r=await fetch(API+'api/stream-chunk',{method:'POST',headers:{'Content-Type':blob.type},body:blob});if(!r.ok)throw Error();$('state').textContent='● LIVE VOICE'}).catch(()=>{$('state').textContent='VOICE STREAM ERROR'})};
+  recorder.start(750); $('ptt').textContent='● LIVE — RELEASE';
+ }catch(e){talking=false;$('state').textContent='MIC ERROR';if(mediaStream)mediaStream.getTracks().forEach(t=>t.stop())}
 }
 async function voiceStop(){
- if(!recorder||recorder.state!=='recording')return;
- $('state').textContent='SENDING VOICE…';
- recorder.onstop=async()=>{
-  try{
-   const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});
-   mediaStream.getTracks().forEach(t=>t.stop());
-   const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),12000);
-   let r=await fetch(API+'api/voice',{method:'POST',headers:{'Content-Type':blob.type},body:blob,signal:ctl.signal});clearTimeout(timer);
-   if(!r.ok)throw Error(await r.text());
-   let x=await r.json(); $('state').textContent='VOICE SENT '+x.seconds+'s';setTimeout(()=>$('state').textContent='SONO PLAY',2500);
-  }catch(e){$('state').textContent=e.name==='AbortError'?'VOICE SENT / TIMEOUT':'VOICE ERROR';setTimeout(()=>$('state').textContent='SONO PLAY',2500)}
-  $('ptt').textContent='HOLD PTT TO TALK';
- };
- recorder.stop();
+ if(!talking)return; talking=false;
+ if(recorder&&recorder.state==='recording')recorder.stop();
+ if(mediaStream)mediaStream.getTracks().forEach(t=>t.stop());
+ await sendChain.catch(()=>{}); try{await api('api/stream-stop',{method:'POST'})}catch(e){}
+ $('state').textContent='SONO PLAY';$('ptt').textContent='HOLD PTT — LIVE VOICE';
 }
+$('ptt').textContent='HOLD PTT — LIVE VOICE';
 $('ptt').onpointerdown=voiceStart;$('ptt').onpointerup=voiceStop;$('ptt').onpointercancel=voiceStop;
 window.addEventListener('longPressStart',voiceStart);window.addEventListener('longPressEnd',voiceStop);
 setInterval(tracks,1500);tracks();
