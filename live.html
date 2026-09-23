@@ -22,5 +22,26 @@ $('connect').onclick=async()=>{try{$('state').textContent='MIC…';stream=await 
 $('talk').onclick=async()=>ui(await api('api/talk',{method:'POST'}));$('live').onclick=async()=>ui(await api('api/take',{method:'POST'}));$('sono').onclick=async()=>ui(await api('api/sono',{method:'POST'}));
 $('next').onclick=async()=>{try{await api('api/next',{method:'POST'});setTimeout(tracks,700)}catch(e){$('state').textContent='NEXT ERROR'}};$('jingle').onclick=async()=>{try{await api('api/jingle',{method:'POST'})}catch(e){$('state').textContent='JINGLE SOON'}};
 $('disconnect').onclick=async()=>{active=false;if(stream)stream.getTracks().forEach(t=>t.stop());if(proc)proc.disconnect();if(src)src.disconnect();if(ctx)ctx.close();ui(await api('api/end',{method:'POST'}))};
+let pttBusy=false;
+async function ensureMic(){
+ if(active)return true;
+ try{
+  $('state').textContent='MIC…';
+  stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+  await api('api/start',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"name":"RABBIT-PTT"}'});
+  ctx=new AudioContext({sampleRate:44100}); await ctx.resume();
+  src=ctx.createMediaStreamSource(stream);proc=ctx.createScriptProcessor(2048,1,1);proc.onaudioprocess=pcm;src.connect(proc);
+  const silent=ctx.createGain();silent.gain.value=0;proc.connect(silent);silent.connect(ctx.destination);
+  active=true;ui(await api('api/state'));return true
+ }catch(e){$('state').textContent='MIC ERROR';return false}
+}
+window.addEventListener('longPressStart',async()=>{
+ if(pttBusy)return;pttBusy=true;
+ if(await ensureMic()){try{ui(await api('api/talk',{method:'POST'}));$('state').textContent='TALK — HOLD'}catch(e){$('state').textContent='TALK ERROR'}}
+ pttBusy=false;
+});
+window.addEventListener('longPressEnd',async()=>{
+ try{ui(await api('api/sono',{method:'POST'}));$('state').textContent='SONO'}catch(e){}
+});
 setInterval(()=>api('api/state').then(ui).catch(()=>{}),1000);setInterval(tracks,1500);api('api/state').then(ui).catch(()=>{});tracks();
 </script></main></body></html>
